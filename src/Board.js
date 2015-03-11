@@ -16,6 +16,7 @@
       } else {
         this.set('n', params.length);
       }
+      this.grid = this.rows();
     },
 
     rows: function() {
@@ -79,12 +80,19 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
-      return _.reduce((this.rows()[rowIndex]), function(a,b) {return a+b;}) > 1;
+      //return _.reduce((this.grid[rowIndex]), function(a,b) {return a+b;}) > 1;
+      var count = 0;
+      var myRow = this.grid[rowIndex];
+      for (var i=0; i<myRow.length; i++) {
+        count += myRow[i];
+      }
+      return count > 1;
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      for (var i=0; i<this.get('n'); i++) {
+      var n = this.get('n');
+      for (var i=0; i<n; i++) {
         if (this.hasRowConflictAt(i))
           return true;
       }
@@ -99,15 +107,17 @@
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
       var count = 0;
-      for (var i=0; i<this.get('n'); i++) {
-        count += this.rows()[i][colIndex];
+      var n = this.get('n');
+      for (var i=0; i<n; i++) {
+        count += this.grid[i][colIndex];
       }
       return count > 1;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
-      for (var i=0; i<this.get('n'); i++) {
+      var n = this.get('n');
+      for (var i=0; i<n; i++) {
         if (this.hasColConflictAt(i))
           return true;
       }
@@ -129,7 +139,7 @@
         steps++;
       }
       while (this._isInBounds(steps, majorDiagonalColumnIndexAtFirstRow+steps)) {
-        count += this.rows()[steps][majorDiagonalColumnIndexAtFirstRow+steps];
+        count += this.grid[steps][majorDiagonalColumnIndexAtFirstRow+steps];
         steps++;
       }
       return count > 1;
@@ -159,7 +169,7 @@
         steps++;
       }
       while (this._isInBounds(steps, minorDiagonalColumnIndexAtFirstRow-steps)) {
-        count += this.rows()[steps][minorDiagonalColumnIndexAtFirstRow-steps];
+        count += this.grid[steps][minorDiagonalColumnIndexAtFirstRow-steps];
         steps++;
       }
       return count > 1;

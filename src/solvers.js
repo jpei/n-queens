@@ -26,13 +26,13 @@ window.findNRooksSolution = function(n) {
         solution = board;
       } else {
         for (var i=0; i<n; i++) {
-          board.rows()[i][numRooks] = 1;
+          board.grid[i][numRooks] = 1;
           numRooks++;
           findNRooksRecurse(i);
           if (solution)
             return;
           numRooks--;
-          board.rows()[i][numRooks] = 0;
+          board.grid[i][numRooks] = 0;
         }
       }
     }
@@ -41,7 +41,7 @@ window.findNRooksSolution = function(n) {
   solution = solution || board;
   var matrixForm = [];
   for (var i=0; i<n; i++) {
-    matrixForm.push(solution.rows()[i]);
+    matrixForm.push(solution.grid[i]);
   }
   return matrixForm;
 };
@@ -61,11 +61,11 @@ window.countNRooksSolutions = function(n) {
         solutionCount++;
       } else {
         for (var i=0; i<n; i++) {
-          board.rows()[i][numRooks] = 1;
+          board.grid[i][numRooks] = 1;
           numRooks++;
           countNRooksRecurse(i);
           numRooks--;
-          board.rows()[i][numRooks] = 0;
+          board.grid[i][numRooks] = 0;
         }
       }
     }
@@ -91,13 +91,13 @@ window.findNQueensSolution = function(n) {
         solution = board;
       } else {
         for (var i=0; i<n; i++) {
-          board.rows()[i][numQueens] = 1;
+          board.grid[i][numQueens] = 1;
           numQueens++;
           findNQueensRecurse(i, numQueens-1);
           if (solution)
             return;
           numQueens--;
-          board.rows()[i][numQueens] = 0;
+          board.grid[i][numQueens] = 0;
         }
       }
     }
@@ -106,7 +106,7 @@ window.findNQueensSolution = function(n) {
   solution = solution || board;
   var matrixForm = [];
   for (var i=0; i<n; i++) {
-    matrixForm.push(solution.rows()[i]);
+    matrixForm.push(solution.grid[i]);
   }
   return matrixForm;
 };
@@ -125,11 +125,11 @@ window.countNQueensSolutions = function(n) {
         solutionCount++;
       } else {
         for (var i=0; i<n; i++) {
-          board.rows()[i][numQueens] = 1;
+          board.grid[i][numQueens] = 1;
           numQueens++;
           findNQueensRecurse(i, numQueens-1);
           numQueens--;
-          board.rows()[i][numQueens] = 0;
+          board.grid[i][numQueens] = 0;
         }
       }
     }
