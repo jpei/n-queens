@@ -14,9 +14,33 @@
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
 window.findNRooksSolution = function(n) {
-  var solution = undefined; //fixme
-
-  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
+  // No column conflicts by construction
+  var solution = undefined;
+  var board = new Board({'n':n});
+  var numRooks = 0;
+  var findNRooksRecurse = function() {
+    if (board.hasAnyRowConflicts())
+      return;
+    else {
+      if (numRooks === n) {
+        console.log('Single solution for ' + n + ' rooks:', JSON.stringify(board));
+        solution = [];
+        for (var i=0; i<n; i++)
+          solution.push(board.rows()[i]);
+      } else {
+        for (var i=0; i<n; i++) {
+          board.rows()[i][numRooks] = 1;
+          numRooks++;
+          findNRooksRecurse();
+          if (solution)
+            return;
+          numRooks--;
+          board.rows()[i][numRooks] = 0;
+        }
+      }
+    }
+  }
+  findNRooksRecurse();
   return solution;
 };
 
@@ -24,8 +48,28 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
-
+  // No column conflicts by construction
+  var solutionCount = 0;
+  var board = new Board({'n':n});
+  var numRooks = 0;
+  var countNRooksRecurse = function() {
+    if (board.hasAnyRowConflicts())
+      return;
+    else {
+      if (numRooks === n) {
+        solutionCount++;
+      } else {
+        for (var i=0; i<n; i++) {
+          board.rows()[i][numRooks] = 1;
+          numRooks++;
+          countNRooksRecurse();
+          numRooks--;
+          board.rows()[i][numRooks] = 0;
+        }
+      }
+    }
+  }
+  countNRooksRecurse();
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
@@ -34,9 +78,33 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
-
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+  // No column conflicts by construction
+  var solution = undefined;
+  var board = new Board({'n':n});
+  var numQueens = 0;
+  var findNQueensRecurse = function() {
+    if (board.hasAnyRowConflicts()) // fixme
+      return;
+    else {
+      if (numQueens === n) {
+        console.log('Single solution for ' + n + ' queens:', JSON.stringify(board));
+        solution = [];
+        for (var i=0; i<n; i++)
+          solution.push(board.rows()[i]);
+      } else {
+        for (var i=0; i<n; i++) {
+          board.rows()[i][numQueens] = 1;
+          numQueens++;
+          findNQueensRecurse();
+          if (solution)
+            return;
+          numRooks--;
+          board.rows()[i][numQueens] = 0;
+        }
+      }
+    }
+  }
+  findNQueensRecurse();
   return solution;
 };
 

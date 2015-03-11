@@ -157,14 +157,10 @@
       var steps = 0;
       while (!this._isInBounds(steps, minorDiagonalColumnIndexAtFirstRow-steps)) {
         steps++;
-        if (steps>15)
-          debugger;
       }
       while (this._isInBounds(steps, minorDiagonalColumnIndexAtFirstRow-steps)) {
         count += this.rows()[steps][minorDiagonalColumnIndexAtFirstRow-steps];
         steps++;
-        if (steps>15)
-          debugger;
       }
       return count > 1;
     },
