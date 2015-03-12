@@ -20,7 +20,7 @@ window.nPiecesSolutions = function(n, callback, testConflict) {
       return;
     else {
       if (numPieces === n) {
-        var reply = callback(board, solution);
+        var reply = callback(board, solution, n);
         earlyTerminate = reply[0];
         solution = reply[1];
       } else {
@@ -43,15 +43,23 @@ window.nPiecesSolutions = function(n, callback, testConflict) {
   return solution;
 };
 
+window.findCallback = function(board, solution, n) {
+  return [true, board];
+}
+window.countCallback = function(board, solution, n) {
+  var incrementBy = 2 - (n === 0 ? 1 : (n % 2 == 1 ? board.grid[(n-1)/2][0] : 0));
+    return [false, solution ? solution + incrementBy : incrementBy];
+}
+window.testRookConflict = function(board, checkRow, checkCol) {
+  return board.hasRowConflictAt(checkRow);
+}
+window.testQueenConflict = function(board, checkRow, checkCol) {
+  return board.hasRowConflictAt(checkRow) || board.hasMajorDiagonalConflictAt(checkCol - checkRow) || board.hasMinorDiagonalConflictAt(checkCol + checkRow);
+}
+
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 window.findNRooksSolution = function(n) {
-  var callback = function(board, solution) {
-    return [true, board];
-  }
-  var testConflict = function(board, checkRow, checkCol) {
-    return board.hasRowConflictAt(checkRow);
-  }
-  var solution = nPiecesSolutions(n, callback, testConflict);
+  var solution = nPiecesSolutions(n, findCallback, testRookConflict);
   var matrixForm = [];
   for (var i=0; i<n; i++) {
     matrixForm.push(solution.grid[i]);
@@ -61,26 +69,13 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var callback = function(board, solution) {
-    var incrementBy = 2 - (n === 0 ? 1 : (n % 2 == 1 ? board.grid[(n-1)/2][0] : 0));
-    return [false, solution ? solution + incrementBy : incrementBy];
-  }
-  var testConflict = function(board, checkRow, checkCol) {
-    return board.hasRowConflictAt(checkRow)
-  }
-  var solution = nPiecesSolutions(n, callback, testConflict);
+  var solution = nPiecesSolutions(n, countCallback, testRookConflict);
   return typeof solution === "number" ? solution : 0;
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var callback = function(board, solution) {
-    return [true, board];
-  }
-  var testConflict = function(board, checkRow, checkCol) {
-    return board.hasRowConflictAt(checkRow) || board.hasMajorDiagonalConflictAt(checkCol - checkRow) || board.hasMinorDiagonalConflictAt(checkCol + checkRow);
-  }
-  var solution = nPiecesSolutions(n, callback, testConflict);
+  var solution = nPiecesSolutions(n, findCallback, testQueenConflict);
   var matrixForm = [];
   for (var i=0; i<n; i++) {
     matrixForm.push(solution.grid[i]);
@@ -88,16 +83,8 @@ window.findNQueensSolution = function(n) {
   return matrixForm;
 };
 
-
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var callback = function(board, solution) {
-    var incrementBy = 2 - (n === 0 ? 1 : (n % 2 == 1 ? board.grid[(n-1)/2][0] : 0));
-    return [false, solution ? solution + incrementBy : incrementBy];
-  }
-  var testConflict = function(board, checkRow, checkCol) {
-    return board.hasRowConflictAt(checkRow) || board.hasMajorDiagonalConflictAt(checkCol - checkRow) || board.hasMinorDiagonalConflictAt(checkCol + checkRow);
-  }
-  var solution = nPiecesSolutions(n, callback, testConflict);
+  var solution = nPiecesSolutions(n, countCallback, testQueenConflict);
   return typeof solution === "number" ? solution : 0;
 };

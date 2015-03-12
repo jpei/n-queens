@@ -72,7 +72,7 @@ describe('solvers', function() {
       _.range(0, 14).map(function(n) {
         var solutionCount = countNQueensSolutions(n);
         var expectedSolutionCount = [1, 1, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200, 73712, 365596][n];
-        // Before web workers: Counting up to 13 takes 9482ms, 11773ms, 11360ms, 9301ms, 9398ms
+        // Before web workers: Counting up to 13 takes 9482ms, 11773ms, 11360ms, 9301ms, 9398mss
 
         expect(solutionCount).to.be.equal(expectedSolutionCount);
       });
