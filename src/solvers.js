@@ -10,9 +10,6 @@
 // (There are also optimizations that will allow you to skip a lot of the dead search space)
 // take a look at solversSpec.js to see what the tests are expecting
 
-
-// return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
-
 window.nPiecesSolutions = function(n, callback, testConflict) {
   var solution = undefined;
   var earlyTerminate = false;
@@ -44,6 +41,7 @@ window.nPiecesSolutions = function(n, callback, testConflict) {
   return solution;
 };
 
+// return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 window.findNRooksSolution = function(n) {
   var callback = function(board, solution) {
     return [true, board];
