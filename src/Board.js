@@ -4,7 +4,7 @@
 
 (function() {
 
-  window.Board = Backbone.Model.extend({
+  this.Board = Backbone.Model.extend({
 
     initialize: function (params) {
       if (_.isUndefined(params) || _.isNull(params)) {
