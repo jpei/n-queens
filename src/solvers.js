@@ -13,32 +13,45 @@
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
-window.findNRooksSolution = function(n) {
+window.nPiecesSolutions = function(n, callback, testConflict) {
   var solution = undefined;
+  var earlyTerminate = false;
   var board = new Board({'n':n});
-  var numRooks = 0;
-  var findNRooksRecurse = function(checkRow) {
-    if (checkRow !== undefined && board.hasRowConflictAt(checkRow)) // No column conflicts by construction
+  var numPieces = 0;
+  var nPiecesRecurse = function(checkRow, checkCol) {
+    if (arguments.length > 0 && testConflict(board, checkRow, checkCol)) // No column conflicts by construction
       return;
     else {
-      if (numRooks === n) {
-        //console.log('Single solution for ' + n + ' rooks:', JSON.stringify(board));
-        solution = board;
+      if (numPieces === n) {
+        var reply = callback(board, solution);
+        earlyTerminate = reply[0];
+        solution = reply[1];
       } else {
         for (var i=0; i<n; i++) {
-          board.grid[i][numRooks] = 1;
-          numRooks++;
-          findNRooksRecurse(i);
-          if (solution)
+          board.grid[i][numPieces] = 1;
+          numPieces++;
+          nPiecesRecurse(i, numPieces - 1);
+          if (earlyTerminate)
             return;
-          numRooks--;
-          board.grid[i][numRooks] = 0;
+          numPieces--;
+          board.grid[i][numPieces] = 0;
         }
       }
     }
   }
-  findNRooksRecurse();
+  nPiecesRecurse();
   solution = solution || board;
+  return solution;
+};
+
+window.findNRooksSolution = function(n) {
+  var callback = function(board, solution) {
+    return [true, board];
+  }
+  var testConflict = function(board, checkRow, checkCol) {
+    return board.hasRowConflictAt(checkRow);
+  }
+  var solution = nPiecesSolutions(n, callback, testConflict);
   var matrixForm = [];
   for (var i=0; i<n; i++) {
     matrixForm.push(solution.grid[i]);
@@ -46,64 +59,27 @@ window.findNRooksSolution = function(n) {
   return matrixForm;
 };
 
-
-
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = 0;
-  var board = new Board({'n':n});
-  var numRooks = 0;
-  var countNRooksRecurse = function(checkRow) {
-    if (checkRow !== undefined && board.hasRowConflictAt(checkRow)) // No column conflicts by construction
-      return;
-    else {
-      if (numRooks === n) {
-        solutionCount++;
-      } else {
-        for (var i=0; i<n; i++) {
-          board.grid[i][numRooks] = 1;
-          numRooks++;
-          countNRooksRecurse(i);
-          numRooks--;
-          board.grid[i][numRooks] = 0;
-        }
-      }
-    }
+  var callback = function(board, solution) {
+    return [false, solution ? solution + 1 : 1];
   }
-  countNRooksRecurse();
-  //console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutionCount;
+  var testConflict = function(board, checkRow, checkCol) {
+    return board.hasRowConflictAt(checkRow)
+  }
+  var solution = nPiecesSolutions(n, callback, testConflict);
+  return typeof solution === "number" ? solution : 0;
 };
-
-
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined;
-  var board = new Board({'n':n});
-  var numQueens = 0;
-  var findNQueensRecurse = function(checkRow, checkCol) {
-    if (arguments.length > 0 && (board.hasRowConflictAt(checkRow) || board.hasMajorDiagonalConflictAt(checkCol - checkRow) || board.hasMinorDiagonalConflictAt(checkCol + checkRow))) // No column conflicts by construction
-      return;
-    else {
-      if (numQueens === n) {
-        //console.log('Single solution for ' + n + ' queens:', JSON.stringify(board));
-        solution = board;
-      } else {
-        for (var i=0; i<n; i++) {
-          board.grid[i][numQueens] = 1;
-          numQueens++;
-          findNQueensRecurse(i, numQueens-1);
-          if (solution)
-            return;
-          numQueens--;
-          board.grid[i][numQueens] = 0;
-        }
-      }
-    }
+  var callback = function(board, solution) {
+    return [true, board];
   }
-  findNQueensRecurse();
-  solution = solution || board;
+  var testConflict = function(board, checkRow, checkCol) {
+    return board.hasRowConflictAt(checkRow) || board.hasMajorDiagonalConflictAt(checkCol - checkRow) || board.hasMinorDiagonalConflictAt(checkCol + checkRow);
+  }
+  var solution = nPiecesSolutions(n, callback, testConflict);
   var matrixForm = [];
   for (var i=0; i<n; i++) {
     matrixForm.push(solution.grid[i]);
@@ -114,27 +90,12 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = 0;
-  var board = new Board({'n':n});
-  var numQueens = 0;
-  var findNQueensRecurse = function(checkRow, checkCol) {
-    if (arguments.length > 0 && (board.hasRowConflictAt(checkRow) || board.hasMajorDiagonalConflictAt(checkCol - checkRow) || board.hasMinorDiagonalConflictAt(checkCol + checkRow))) // No column conflicts by construction
-      return;
-    else {
-      if (numQueens === n) {
-        solutionCount++;
-      } else {
-        for (var i=0; i<n; i++) {
-          board.grid[i][numQueens] = 1;
-          numQueens++;
-          findNQueensRecurse(i, numQueens-1);
-          numQueens--;
-          board.grid[i][numQueens] = 0;
-        }
-      }
-    }
+  var callback = function(board, solution) {
+    return [false, solution ? solution + 1 : 1];
   }
-  findNQueensRecurse();
-  //console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  return solutionCount;
+  var testConflict = function(board, checkRow, checkCol) {
+    return board.hasRowConflictAt(checkRow) || board.hasMajorDiagonalConflictAt(checkCol - checkRow) || board.hasMinorDiagonalConflictAt(checkCol + checkRow);
+  }
+  var solution = nPiecesSolutions(n, callback, testConflict);
+  return typeof solution === "number" ? solution : 0;
 };
