@@ -1,3 +1,5 @@
+// Taken from Martin Richard's Backtracking Algorithms in MCPL using Bit Patterns and Recursion
+
 var count, all;
 var trySol = function(ld, cols, rd) {
 	if (cols === all)

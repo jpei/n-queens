@@ -25,6 +25,8 @@ window.nPiecesSolutions = function(n, callback, testConflict) {
         solution = reply[1];
       } else {
         for (var i=0; i<n; i++) {
+          if (numPieces === 0 && i >= n/2) // Uses left-right symmetry to approximately halve the calculations
+            continue;
           board.grid[i][numPieces] = 1;
           numPieces++;
           nPiecesRecurse(i, numPieces - 1);
@@ -60,7 +62,8 @@ window.findNRooksSolution = function(n) {
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
   var callback = function(board, solution) {
-    return [false, solution ? solution + 1 : 1];
+    var incrementBy = 2 - (n === 0 ? 1 : (n % 2 == 1 ? board.grid[(n-1)/2][0] : 0));
+    return [false, solution ? solution + incrementBy : incrementBy];
   }
   var testConflict = function(board, checkRow, checkCol) {
     return board.hasRowConflictAt(checkRow)
@@ -89,7 +92,8 @@ window.findNQueensSolution = function(n) {
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
   var callback = function(board, solution) {
-    return [false, solution ? solution + 1 : 1];
+    var incrementBy = 2 - (n === 0 ? 1 : (n % 2 == 1 ? board.grid[(n-1)/2][0] : 0));
+    return [false, solution ? solution + incrementBy : incrementBy];
   }
   var testConflict = function(board, checkRow, checkCol) {
     return board.hasRowConflictAt(checkRow) || board.hasMajorDiagonalConflictAt(checkCol - checkRow) || board.hasMinorDiagonalConflictAt(checkCol + checkRow);
