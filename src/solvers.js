@@ -10,7 +10,7 @@
 // (There are also optimizations that will allow you to skip a lot of the dead search space)
 // take a look at solversSpec.js to see what the tests are expecting
 
-window.nPiecesSolutionsLead = function(n, callback, testConflict) {
+window.nPiecesSolutionsLead = function(n, callback, testConflict, done) {
   var numCores = navigator.hardwareConcurrency || 4;
   if (window[callback]()[0] || numCores === 1 || !window.Worker)
     return nPiecesSolutions(n, callback, testConflict);
@@ -25,20 +25,24 @@ window.nPiecesSolutionsLead = function(n, callback, testConflict) {
   for (var i=Math.floor((n-1)/2); i>=0; i--) {
     window.allOutstandingTasks.push([n, callback, testConflict, i, groupIndex]);
   }
+  if (n === 0) {
+    window.totalSolution[groupIndex] = 1;
+    done();
+  }
 
   for (var i=0; i<numCores-1; i++) { // Ideally each core assigned to a worker except first to main
     if (window.allOutstandingTasks.length && !myWorkers[i]) {
       myWorkers[i] = new Worker('/src/solverWorker.js');
       var task = window.allOutstandingTasks.shift();
       task.push(i);
-      // console.log(JSON.stringify(task));
       myWorkers[i].postMessage(JSON.stringify(task));
       myWorkers[i].onmessage = function(e) {
         var message = JSON.parse(e.data); //message is [solutionCount, groupIndex, workerIndex]
         (typeof message[0] === 'number') && (window.totalSolution[message[1]] += message[0]);
         window.numOutstandingTasks[message[1]]--;
         if (!window.numOutstandingTasks[message[1]]) {
-          console.log(window.totalSolution[message[1]]);
+          //console.log(window.totalSolution[message[1]]);
+          setTimeout(done, 200);
         }
         if (window.allOutstandingTasks.length) {
           var task = window.allOutstandingTasks.shift();
@@ -64,10 +68,8 @@ window.findNRooksSolution = function(n) {
 };
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
-window.countNRooksSolutions = function(n) {
-  nPiecesSolutionsLead(n, "countCallback", "testRookConflict")
-  // var solution = nPiecesSolutionsLead(n, "countCallback", "testRookConflict");
-  // return typeof solution === "number" ? solution : 0;
+window.countNRooksSolutions = function(n, done) {
+  nPiecesSolutionsLead(n, "countCallback", "testRookConflict", done);
 };
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
@@ -81,8 +83,6 @@ window.findNQueensSolution = function(n) {
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
-window.countNQueensSolutions = function(n) {
-  nPiecesSolutionsLead(n, "countCallback", "testQueenConflict")
-  // var solution = nPiecesSolutionsLead(n, "countCallback", "testQueenConflict");
-  // return typeof solution === "number" ? solution : 0;
+window.countNQueensSolutions = function(n, done) {
+  nPiecesSolutionsLead(n, "countCallback", "testQueenConflict", done);
 };

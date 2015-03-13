@@ -1,5 +1,10 @@
 describe('solvers', function() {
   window.displayBoard = function() {};
+  afterEach(function() {
+    delete window.totalSolution;
+    delete window.numOutstandingTasks;
+    delete window.allOutstandingTasks;
+  });
 
   describe('findNRooksSolution()', function() {
 
@@ -21,16 +26,22 @@ describe('solvers', function() {
   });
 
   describe('countNRooksSolutions()', function() {
-
+    before(function(done) {
+      this.timeout(10000);
+      _.range(0, 9).map(function(n) {
+        if (n < 8)
+          countNRooksSolutions(n, function(){});
+        else countNRooksSolutions(n, done);
+      })
+    });
     it('finds the number of valid solutions for n of 1-8', function() {
-      _.range(1, 9).map(function(n) {
-        var solutionCount = countNRooksSolutions(n);
+      _.range(0, 9).map(function(n) {
+        var solutionCount = window.totalSolution[n];
         var expectedSolutionCount = [1, 1, 2, 6, 24, 120, 720, 5040, 40320][n];
 
         expect(solutionCount).to.be.equal(expectedSolutionCount);
       });
     });
-
   });
 
   describe('findNQueensSolution()', function() {
@@ -68,12 +79,20 @@ describe('solvers', function() {
 
   describe('countNQueensSolutions()', function() {
 
-    it('finds the number of valid solutions for n of 0-13', function() {
-      _.range(0, 14).map(function(n) {
-        var solutionCount = countNQueensSolutions(n);
+    before(function(done) {
+      this.timeout(10000);
+      _.range(0, 9).map(function(n) {
+        if (n < 8)
+          countNQueensSolutions(n, function(){});
+        else countNQueensSolutions(n, done);
+      })
+    });
+
+    it('finds the number of valid solutions for n of 0-8', function() {
+      _.range(0, 9).map(function(n) {
+        var solutionCount = window.totalSolution[n];
         var expectedSolutionCount = [1, 1, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200, 73712, 365596][n];
         // Before web workers: Counting up to 13 takes 9482ms, 11773ms, 11360ms, 9301ms, 9398mss
-
         expect(solutionCount).to.be.equal(expectedSolutionCount);
       });
     });
