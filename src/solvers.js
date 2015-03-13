@@ -42,7 +42,8 @@ window.nPiecesSolutionsLead = function(n, callback, testConflict, done) {
         window.numOutstandingTasks[message[1]]--;
         if (!window.numOutstandingTasks[message[1]]) {
           //console.log(window.totalSolution[message[1]]);
-          setTimeout(done, 200);
+          //setTimeout(done, 5000); // Things go out of sync when calculations are too big
+          done();
         }
         if (window.allOutstandingTasks.length) {
           var task = window.allOutstandingTasks.shift();
