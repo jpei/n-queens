@@ -27,7 +27,8 @@ window.nPiecesSolutionsLead = function(n, callback, testConflict, done) {
   }
   if (n === 0) {
     window.totalSolution[groupIndex] = 1;
-    done();
+    if (done !== undefined)
+      done();
   }
 
   for (var i=0; i<numCores-1; i++) { // Ideally each core assigned to a worker except first to main
@@ -42,8 +43,9 @@ window.nPiecesSolutionsLead = function(n, callback, testConflict, done) {
         window.numOutstandingTasks[message[1]]--;
         if (!window.numOutstandingTasks[message[1]]) {
           //console.log(window.totalSolution[message[1]]);
-          //setTimeout(done, 5000); // Things go out of sync when calculations are too big
-          done();
+          if (done !== undefined){
+            done();
+          }
         }
         if (window.allOutstandingTasks.length) {
           var task = window.allOutstandingTasks.shift();

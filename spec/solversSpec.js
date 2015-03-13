@@ -29,14 +29,17 @@ describe('solvers', function() {
   describe('countNRooksSolutions()', function() {
     before(function(done) {
       this.timeout(60000);
-      _.range(0, maxN+1).map(function(n) {
-        if (n < maxN)
-          countNRooksSolutions(n, function(){});
-        else countNRooksSolutions(n, done);
-      })
+      var count = 0;
+      var doneOnce = function() {
+        count++;
+        if (count === maxN + 1)
+          done();
+      }
+      for (var i=0; i <= maxN; i++) {
+        countNRooksSolutions(i, doneOnce);
+      }
     });
     it('finds the number of valid solutions for n of 0-'+maxN, function() {
-      console.log(window.totalSolution);
       _.range(0, maxN+1).map(function(n) {
         var solutionCount = window.totalSolution[n];
         var expectedSolutionCount = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800][n];
@@ -83,18 +86,21 @@ describe('solvers', function() {
 
     before(function(done) {
       this.timeout(60000);
-      _.range(0, maxN+1).map(function(n) {
-        if (n < maxN)
-          countNQueensSolutions(n, function(){});
-        else countNQueensSolutions(n, done);
-      })
+      var count = 0;
+      var doneOnce = function() {
+        count++;
+        if (count === maxN + 1)
+          done();
+      }
+      for (var i=0; i <= maxN; i++) {
+        countNQueensSolutions(i, doneOnce);
+      }
     });
 
     it('finds the number of valid solutions for n of 0-'+maxN, function() {
       _.range(0, maxN+1).map(function(n) {
         var solutionCount = window.totalSolution[n];
         var expectedSolutionCount = [1, 1, 0, 0, 2, 10, 4, 40, 92, 352, 724][n];
-        // Before web workers: Counting up to 13 takes 9482ms, 11773ms, 11360ms, 9301ms, 9398mss
         expect(solutionCount).to.be.equal(expectedSolutionCount);
       });
     });
