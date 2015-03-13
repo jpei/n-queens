@@ -6,7 +6,8 @@ self.addEventListener('message', function(e) {
   importScripts('Board.js');
 
 	var task = JSON.parse(e.data); // task = [n, callback, testConflict, initToCheck, groupIndex, workerIndex]
-	postMessage(JSON.stringify([nPiecesSolutions(task[0],task[1],task[2],task[3]), task[4], task[5]]));
+  var toSolver = JSON.stringify([nPiecesSolutions(task[0],task[1],task[2],task[3]), task[4], task[5]]);
+	postMessage(toSolver);
 });
 
 var nPiecesSolutions = function(n, callback, testConflict, init) {
@@ -53,12 +54,13 @@ var findCallback = function(board, solution, n) {
 var countCallback = function(board, solution, n) {
   if (board === undefined)
     return [false, undefined];
-  var incrementBy = 2 - (n === 0 ? 1 : (n % 2 == 1 ? board.grid[(n-1)/2][0] : 0));
+  var incrementBy = 2 - (n === 0 ? 1 : (n % 2 == 1 ? board.grid[(n-1)/2][0] : 0)); // Using left-right symmetry means double-counting most values
   return [false, solution ? solution + incrementBy : incrementBy];
 }
 var testRookConflict = function(board, checkRow, checkCol) {
   return board.hasRowConflictAt(checkRow);
 }
 var testQueenConflict = function(board, checkRow, checkCol) {
-  return board.hasRowConflictAt(checkRow) || board.hasMajorDiagonalConflictAt(checkCol - checkRow) || board.hasMinorDiagonalConflictAt(checkCol + checkRow);
+  return board.hasRowConflictAt(checkRow) || board.hasMajorDiagonalConflictAt(checkCol - checkRow)
+    || board.hasMinorDiagonalConflictAt(checkCol + checkRow);
 }

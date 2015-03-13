@@ -16,7 +16,7 @@
       } else {
         this.set('n', params.length);
       }
-      this.grid = this.rows();
+      this.grid = this.rows(); // This property was added in comparison to source to avoid repeatedly invoking this.rows()
     },
 
     rows: function() {

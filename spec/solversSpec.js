@@ -2,7 +2,7 @@ describe('solvers', function() {
   window.displayBoard = function() {};
   var maxN = 10;
   afterEach(function() {
-    delete window.totalSolution;
+    delete window.totalSolution; // These deletions are not critical, rather they make their corresponding test values easier to retrieve
     delete window.numOutstandingTasks;
     delete window.allOutstandingTasks;
   });
@@ -23,12 +23,11 @@ describe('solvers', function() {
         expect(solutionBoard.hasAnyRooksConflicts()).to.be.equal(false);
       });
     });
-
   });
 
   describe('countNRooksSolutions()', function() {
     before(function(done) {
-      this.timeout(60000);
+      this.timeout(20000);
       var count = 0;
       var doneOnce = function() {
         count++;
@@ -79,13 +78,12 @@ describe('solvers', function() {
         expect(solutionBoard.get('n')).to.equal(n);
       });
     });
-
   });
 
   describe('countNQueensSolutions()', function() {
 
     before(function(done) {
-      this.timeout(60000);
+      this.timeout(20000);
       var count = 0;
       var doneOnce = function() {
         count++;
@@ -100,11 +98,10 @@ describe('solvers', function() {
     it('finds the number of valid solutions for n of 0-'+maxN, function() {
       _.range(0, maxN+1).map(function(n) {
         var solutionCount = window.totalSolution[n];
-        var expectedSolutionCount = [1, 1, 0, 0, 2, 10, 4, 40, 92, 352, 724][n];
+        var expectedSolutionCount = [1, 1, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200, 73712, 365596][n];
+
         expect(solutionCount).to.be.equal(expectedSolutionCount);
       });
     });
-
   });
-
 });

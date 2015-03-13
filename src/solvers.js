@@ -10,9 +10,11 @@
 // (There are also optimizations that will allow you to skip a lot of the dead search space)
 // take a look at solversSpec.js to see what the tests are expecting
 
+// nxn is size of board, callback is find one or count all, testConflict is rooks or queens
+// and done is invoked when the solution has been reached
 window.nPiecesSolutionsLead = function(n, callback, testConflict, done) {
   var numCores = navigator.hardwareConcurrency || 4;
-  if (window[callback]()[0] || numCores === 1 || !window.Worker)
+  if (window[callback]()[0] || numCores === 1 || !window.Worker) // window[callback]()[0] is true when callback is find, since extra cores are not needed
     return nPiecesSolutions(n, callback, testConflict);
   var myWorkers = [];
   window.totalSolution = window.totalSolution || [];
@@ -20,9 +22,9 @@ window.nPiecesSolutionsLead = function(n, callback, testConflict, done) {
   window.numOutstandingTasks = window.numOutstandingTasks || [];
   window.numOutstandingTasks.push(Math.floor((n-1)/2)+1);
   window.allOutstandingTasks = window.allOutstandingTasks || [];
-  var groupIndex = window.totalSolution.length-1;
+  var groupIndex = window.totalSolution.length-1; // This groups all workers on a given problem together
 
-  for (var i=Math.floor((n-1)/2); i>=0; i--) {
+  for (var i=Math.floor((n-1)/2); i>=0; i--) { // By left-right symmetry, only approximately half the values need be calculated
     window.allOutstandingTasks.push([n, callback, testConflict, i, groupIndex]);
   }
   if (n === 0) {
@@ -38,13 +40,13 @@ window.nPiecesSolutionsLead = function(n, callback, testConflict, done) {
       task.push(i);
       myWorkers[i].postMessage(JSON.stringify(task));
       myWorkers[i].onmessage = function(e) {
-        var message = JSON.parse(e.data); //message is [solutionCount, groupIndex, workerIndex]
+        var message = JSON.parse(e.data); // message is [solutionCount, groupIndex, workerIndex]
         (typeof message[0] === 'number') && (window.totalSolution[message[1]] += message[0]);
         window.numOutstandingTasks[message[1]]--;
         if (!window.numOutstandingTasks[message[1]]) {
-          //console.log(window.totalSolution[message[1]]);
-          if (done !== undefined){
-            done();
+          // console.log(window.totalSolution[message[1]]);
+          if (done !== undefined){ // Caution: This is not necessarily associated to the correct done,
+            done();                // since done is a function and cannot be passed to solverWorker
           }
         }
         if (window.allOutstandingTasks.length) {
